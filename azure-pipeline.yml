@@ -1,0 +1,53 @@
+name: $(SourceBranchName)-$(Date:yyyyMMdd)-$(Rev:rrr)
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - main
+      - develop
+  paths:
+    include:
+      - ./environments/*.tfvars
+      - ./terraform/*.tf
+      - ./.azuredevops/*.yml #templates
+      - ./*.yaml #triggers
+
+resources:
+  repositories:
+    - repository: remote
+      type: github
+      name: 'casa-de-vops/terraform-code-standards'
+      ref: 'refs/heads/main'
+      endpoint: 'GitHub'
+      mapping: '.azuredevops'
+      
+    - repository: local
+      type: git
+      name: 'terraform-code-standards'
+      ref: 'refs/heads/main'
+
+variables:
+  - group: ssh_host #library group containing knownHostsEntry, sshPublicKey, sshPassphrase, sshKeySecureFile
+  - template: 'versions/modules.nonprod.yml'
+
+stages:
+  - template: .azuredevops/stages.deploy.yml@local #Change this to @remote to use the remote templates from casa-de-vops/terraform-code-standards
+    parameters:
+      workload: terraform-pipeline
+      working_directory: terraform/
+      environments: 
+      - stage: Dev_Global
+        vmImage: 'ubuntu-latest'
+        azure_service_connection: terraform
+        tfvars_file: ../environments/dev.tfvars
+        environment: dev
+        ado_environment: nonprod
+        backend_service_connection: terraform
+        backend_azure_rm_resource_group_name: rg-terraform-ops
+        backend_azure_rm_storage_account_name: casadevopsterraform
+        backend_azure_rm_container_name: ops-terraform-state      
+        backend_azure_rm_key: project-casa-de-vops-devops.prod.tfstate
+        command_option_args: '-var pipeline_variable="$(input_variable)"'
+        # destroy_mode: true ## runs the -destroy flag in the terraform plan & apply stages
+        # step_apply_command_option_args: '-no-color'

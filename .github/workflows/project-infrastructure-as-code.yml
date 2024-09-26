@@ -1,5 +1,5 @@
 # .github/workflows/trigger.yml
-name: Trigger Terraform Orchestration
+name: Build Infrastructure-as-Code
 
 on:
   push:
@@ -33,3 +33,4 @@ jobs:
       backend_azure_rm_key: 'project-casa-de-vops-devops.prod.tfstate'
       plan_file_name: 'terraform.tfplan'
       var_file: '../environments/infrastructure-as-code.tfvars'
+      additional_args: '-var "azuredevops_personal_access_token=${{ secrets.AZURE_DEVOPS_PERSONAL_ACCESS_TOKEN }}"'

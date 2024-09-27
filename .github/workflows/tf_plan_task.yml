@@ -31,10 +31,6 @@ on:
         type: string
       command_option_args:
         required: false
-        default: ''
-        type: string
-      command_option_args:
-        required: false
         type: string
         default: ''
       var_file:

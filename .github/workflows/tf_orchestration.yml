@@ -37,6 +37,11 @@ on:
         description: 'Azure Key'
         required: true
         type: string
+      command_option_args :
+        description: 'Terraform command options'
+        required: false
+        default: ''
+        type: string
       plan_file_name:
         description: 'Terraform plan file name'
         required: false
@@ -75,6 +80,7 @@ jobs:
       backend_azure_rm_key: ${{ inputs.backend_azure_rm_key }}
       plan_file_name: ${{ inputs.plan_file_name }}
       var_file: ${{ inputs.var_file }}
+      command_option_args : ${{ inputs.command_option_args }}
 
   inspect:
     needs: plan

@@ -29,6 +29,7 @@ resources:
 
 variables:
   - group: ssh_host #library group containing knownHostsEntry, sshPublicKey, sshPassphrase, sshKeySecureFile
+  - group: ado
   - template: 'versions/modules.nonprod.yml'
 
 stages:
@@ -37,17 +38,17 @@ stages:
       workload: terraform-pipeline
       working_directory: terraform/
       environments: 
-      - stage: Dev_Global
+      - stage: Prod_Global
         vmImage: 'ubuntu-latest'
         azure_service_connection: terraform
-        tfvars_file: ../environments/dev.tfvars
-        environment: dev
+        tfvars_file: ../environments/infrastructure-as-code.tfvars
+        environment: prod
         ado_environment: nonprod
         backend_service_connection: terraform
         backend_azure_rm_resource_group_name: rg-terraform-ops
         backend_azure_rm_storage_account_name: casadevopsterraform
         backend_azure_rm_container_name: ops-terraform-state      
         backend_azure_rm_key: project-casa-de-vops-devops.prod.tfstate
-        command_option_args: '-var pipeline_variable="$(input_variable)"'
+        command_option_args: '-var azuredevops_personal_access_token="$(azuredevops_personal_access_token)" -var azuredevops_org_service_url="$(azuredevops_org_service_url)"'
         # destroy_mode: true ## runs the -destroy flag in the terraform plan & apply stages
         # step_apply_command_option_args: '-no-color'

@@ -16,4 +16,10 @@ repos = {
     source_type    = "Git"
     source_url     = "https://github.com/casa-de-vops/terraform-code-standards.git"
   }
+  "landing-zone-02" = {
+    default_branch = "main"
+    init_type      = "Import"
+    source_type    = "Git"
+    source_url     = "https://github.com/casa-de-vops/terraform-code-standards.git"
+  }
 }

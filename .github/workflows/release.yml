@@ -1,0 +1,58 @@
+name: Tag and Release
+
+on:
+  push:
+    branches:
+      - main
+      - release/*
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  SEMVERBOT_VERSION: "1.0.0"  # Replace with the desired version of semverbot
+
+jobs:
+  TagStage:
+    name: Bump Git Tag with Semverbot
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'  # Specify the Python version you need
+
+      - name: Install Semverbot
+        run: |
+          SEMVERBOT_VERSION=1.0.0
+          mkdir bin
+          echo "$(pwd)/bin" >> $GITHUB_PATH
+          curl -o bin/sbot -L https://github.com/restechnica/semverbot/releases/download/v$SEMVERBOT_VERSION/sbot-linux-amd64
+          chmod +x bin/sbot
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'semverbot'
+          git config --global user.email 'semverbot@github.com'
+
+      - name: Update Version Information
+        run: |
+          sbot update version
+          current_version="$(sbot get version)"
+          release_version="$(sbot predict version)"
+          
+          echo "CURRENT_VERSION=${current_version}" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=${release_version}" >> $GITHUB_ENV
+          
+          echo "current version: ${current_version}"
+          echo "next version: ${release_version}"
+
+      - name: Release and Push Version
+        run: |
+          sbot release version
+          sbot push version

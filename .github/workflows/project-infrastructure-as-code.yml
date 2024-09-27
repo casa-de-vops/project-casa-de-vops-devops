@@ -21,8 +21,10 @@ jobs:
     name: Terraform CI/CD Orchestration
     uses: casa-de-vops/terraform-code-standards/.github/workflows/tf_orchestration.yml@main
     # uses: ./.github/workflows/tf_orchestration.yml
-    secrets: inherit
     env:
+          PAT_TOKEN: ${{ secrets.AZURE_DEVOPS_PERSONAL_ACCESS_TOKEN }}
+    secrets: inherit
+    with:
       tf_version: 'latest'
       working_directory: 'terraform/'
       environment: 'dev'
@@ -33,4 +35,4 @@ jobs:
       backend_azure_rm_key: 'project-casa-de-vops-devops.prod.tfstate'
       plan_file_name: 'terraform.tfplan'
       var_file: '../environments/infrastructure-as-code.tfvars'
-      additional_args: '-var "azuredevops_personal_access_token=${{ secrets.AZURE_DEVOPS_PERSONAL_ACCESS_TOKEN }}"'
+      additional_args: '-var "azuredevops_personal_access_token=$PAT_TOKEN"'

@@ -16,7 +16,7 @@ permissions:
   security-events: write
 
 env:
-  PAT_TOKEN: ${{ secrets.AZURE_DEVOPS_PERSONAL_ACCESS_TOKEN }}
+  TF_VAR_azuredevops_personal_access_token: ${{ secrets.AZURE_DEVOPS_PERSONAL_ACCESS_TOKEN }}
 
 jobs:
   terraform:
@@ -35,4 +35,3 @@ jobs:
       backend_azure_rm_key: 'project-casa-de-vops-devops.prod.tfstate'
       plan_file_name: 'terraform.tfplan'
       var_file: '../environments/infrastructure-as-code.tfvars'
-      command_option_args: '-var "azuredevops_personal_access_token=$PAT_TOKEN"'
